@@ -1,5 +1,5 @@
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -15,16 +15,19 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  Textarea,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 
 export function BoardView() {
-  const { id } = useParams();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [board, setBoard] = useState(null);
-  const navigate = useNavigate();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+  const navigate = useNavigate();
+
+  const { id } = useParams();
 
   useEffect(() => {
     axios
@@ -41,14 +44,14 @@ export function BoardView() {
       .delete("/api/board/remove/" + id)
       .then((response) => {
         toast({
-          description: id + "번 게시물이 삭제되었습니다",
+          description: id + "번 게시물이 삭제되었습니다.",
           status: "success",
         });
         navigate("/");
       })
       .catch((error) => {
         toast({
-          description: "삭제 중 문제가 발생하였습니다",
+          description: "삭제 중 문제가 발생하였습니다.",
           status: "error",
         });
       })
@@ -60,26 +63,28 @@ export function BoardView() {
       <h1>{board.id}번 글 보기</h1>
       <FormControl>
         <FormLabel>제목</FormLabel>
-        <Input value={board.title}></Input>
+        <Input value={board.title} readOnly />
       </FormControl>
       <FormControl>
         <FormLabel>본문</FormLabel>
-        <Input value={board.content}></Input>
+        <Textarea value={board.content} readOnly />
       </FormControl>
       <FormControl>
         <FormLabel>작성자</FormLabel>
-        <Input value={board.writer}></Input>
+        <Input value={board.writer} readOnly />
       </FormControl>
       <FormControl>
         <FormLabel>작성일시</FormLabel>
-        <Input value={board.inserted}></Input>
+        <Input value={board.inserted} readOnly />
       </FormControl>
-      <Button colorScheme="purple">수정</Button>
+      <Button colorScheme="purple" onClick={() => navigate("/edit/" + id)}>
+        수정
+      </Button>
       <Button colorScheme="red" onClick={onOpen}>
         삭제
       </Button>
 
-      {/*삭제 모달*/}
+      {/* 삭제 모달 */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -90,7 +95,7 @@ export function BoardView() {
           <ModalFooter>
             <Button onClick={onClose}>닫기</Button>
             <Button onClick={handleDelete} colorScheme="red">
-              삭제하기
+              삭제
             </Button>
           </ModalFooter>
         </ModalContent>

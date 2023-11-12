@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -7,7 +8,6 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -16,13 +16,12 @@ export function BoardWrite() {
   const [content, setContent] = useState("");
   const [writer, setWriter] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
 
   const toast = useToast();
+  const navigate = useNavigate();
 
   function handleSubmit() {
     setIsSubmitting(true);
-
     axios
       .post("/api/board/add", {
         title,
@@ -31,15 +30,16 @@ export function BoardWrite() {
       })
       .then(() => {
         toast({
-          description: "새 글이 저장되었습니다",
+          description: "새 글이 저장되었습니다.",
           status: "success",
         });
         navigate("/");
       })
       .catch((error) => {
+        console.log(error.response.status);
         if (error.response.status === 400) {
           toast({
-            description: "작성한 내용을 확인해 주세요",
+            description: "작성한 내용을 확인해주세요.",
             status: "error",
           });
         } else {
@@ -49,9 +49,7 @@ export function BoardWrite() {
           });
         }
       })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
+      .finally(() => setIsSubmitting(false));
   }
 
   return (
@@ -70,7 +68,7 @@ export function BoardWrite() {
           ></Textarea>
         </FormControl>
         <FormControl>
-          <FormLabel> 작성자</FormLabel>
+          <FormLabel>작성자</FormLabel>
           <Input
             value={writer}
             onChange={(e) => setWriter(e.target.value)}
