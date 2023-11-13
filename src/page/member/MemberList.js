@@ -26,10 +26,9 @@ export function MemberList() {
   }
 
   function handleTableRowClick(id) {
-    // 쿼리
     const params = new URLSearchParams();
     params.set("id", id);
-    // /member?id=id로 사용하고 싶다
+    // /member?id=id
     navigate("/member?" + params.toString());
   }
 
@@ -40,6 +39,7 @@ export function MemberList() {
           <Tr>
             <Th>id</Th>
             <Th>pw</Th>
+            <Th>별명</Th>
             <Th>email</Th>
             <Th>가입일시</Th>
           </Tr>
@@ -53,6 +53,7 @@ export function MemberList() {
             >
               <Td>{member.id}</Td>
               <Td>{member.password}</Td>
+              <Td>{member.nickName}</Td>
               <Td>{member.email}</Td>
               <Td>{member.inserted}</Td>
             </Tr>

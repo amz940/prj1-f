@@ -14,12 +14,11 @@ import { useNavigate } from "react-router-dom";
 
 export function MemberSignup() {
   const [id, setId] = useState("");
-  const [idAvailable, setIdAvailable] = useState(false);
-
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
-
   const [email, setEmail] = useState("");
+
+  const [idAvailable, setIdAvailable] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState(false);
 
   const [nickName, setNickName] = useState("");
@@ -38,11 +37,15 @@ export function MemberSignup() {
     submitAvailable = false;
   }
 
-  if (password != passwordCheck) {
+  if (password !== passwordCheck) {
     submitAvailable = false;
   }
 
   if (password.length === 0) {
+    submitAvailable = false;
+  }
+
+  if (!nickNameAvailable) {
     submitAvailable = false;
   }
 
@@ -52,6 +55,7 @@ export function MemberSignup() {
         id,
         password,
         email,
+        nickName,
       })
       .then(() => {
         // toast
@@ -135,7 +139,7 @@ export function MemberSignup() {
       .then(() => {
         setNickNameAvailable(false);
         toast({
-          description: "이미 사용 중인 닉네임입니다.",
+          description: "이미 사용 중인 별명입니다.",
           status: "warning",
         });
       })
@@ -143,7 +147,7 @@ export function MemberSignup() {
         if (error.response.status === 404) {
           setNickNameAvailable(true);
           toast({
-            description: "사용 가능한 email입니다.",
+            description: "사용 가능한 별명입니다.",
             status: "success",
           });
         }
@@ -177,7 +181,7 @@ export function MemberSignup() {
 
         <FormErrorMessage>암호를 입력해 주세요.</FormErrorMessage>
       </FormControl>
-      <FormControl isInvalid={password != passwordCheck}>
+      <FormControl isInvalid={password !== passwordCheck}>
         <FormLabel>password 확인</FormLabel>
         <Input
           type="password"
@@ -187,7 +191,7 @@ export function MemberSignup() {
         <FormErrorMessage>암호가 다릅니다.</FormErrorMessage>
       </FormControl>
 
-      <FormControl>
+      <FormControl isInvalid={!nickNameAvailable}>
         <FormLabel>nick name</FormLabel>
         <Flex>
           <Input
@@ -197,11 +201,10 @@ export function MemberSignup() {
               setNickName(e.target.value);
               setNickNameAvailable(false);
             }}
-          >
-            중복 체크
-          </Input>
-          <Button onClick={handleNickNameCheck}></Button>
+          ></Input>
+          <Button onClick={handleNickNameCheck}>중복확인</Button>
         </Flex>
+        <FormErrorMessage>nickName 중복 체크를 해주세요.</FormErrorMessage>
       </FormControl>
 
       <FormControl isInvalid={!emailAvailable}>
