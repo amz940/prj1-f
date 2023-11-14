@@ -6,7 +6,8 @@ import { LoginContext } from "../App";
 
 export function NavBar() {
   const navigate = useNavigate();
-  const { fetchLogin, login, isAuthenticated } = useContext(LoginContext);
+  const { fetchLogin, login, isAuthenticated, isAdmin } =
+    useContext(LoginContext);
   const toast = useToast();
 
   function handleLogout() {
@@ -32,7 +33,7 @@ export function NavBar() {
       {isAuthenticated() || (
         <Button onClick={() => navigate("/signup")}>signup</Button>
       )}
-      {isAuthenticated() && (
+      {isAdmin() && (
         <Button onClick={() => navigate("/member/list")}>회원목록</Button>
       )}
       {isAuthenticated() || (

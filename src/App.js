@@ -23,7 +23,7 @@ const routes = createBrowserRouter(
       <Route index element={<BoardList />} />
       <Route path="write" element={<BoardWrite />} />
       <Route path="board/:id" element={<BoardView />} />
-      <Route path="edit/:id" element={<BoardEdit />}></Route>
+      <Route path="edit/:id" element={<BoardEdit />} />
       <Route path="signup" element={<MemberSignup />} />
       <Route path="member/list" element={<MemberList />} />
       <Route path="member" element={<MemberView />} />
@@ -43,6 +43,7 @@ function App(props) {
     fetchLogin();
   }, []);
 
+  console.log(login);
   // 로그인 성공하거나  실패 할때 사용 하는 코드
   function fetchLogin() {
     axios.get("/api/member/login").then((response) => setLogin(response.data));
@@ -52,6 +53,21 @@ function App(props) {
   function isAuthenticated() {
     return login !== "";
   }
+  // 어떤 권한을 들고 있는 아이디인지 알려주는 코드
+  function isAdmin() {
+    if (login.auth) {
+      return login.auth.some((elem) => elem.name === "admin");
+    }
+    return false;
+  }
+  //
+  // function isManager(){
+  //   return login.auth.some((elem) => elem.name === "manager");
+  // }
+  //
+  // function hasAuth(auth){
+  //   return login.auth.some((elem) => elem.name === "auth");
+  // }
 
   function hasAccess(userId) {
     return login.id === userId;
@@ -59,7 +75,7 @@ function App(props) {
 
   return (
     <LoginContext.Provider
-      value={{ login, fetchLogin, isAuthenticated, hasAccess }}
+      value={{ login, fetchLogin, isAuthenticated, hasAccess, isAdmin }}
     >
       <RouterProvider router={routes} />;
     </LoginContext.Provider>
