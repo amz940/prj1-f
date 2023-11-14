@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useEffect, useState } from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -15,6 +15,7 @@ import { MemberList } from "./page/member/MemberList";
 import { MemberView } from "./page/member/MemberView";
 import { MemberEdit } from "./page/member/MemberEdit";
 import { MemberLogin } from "./page/member/MemberLogin";
+import axios from "axios";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -32,8 +33,31 @@ const routes = createBrowserRouter(
   ),
 );
 
+export const LoginContext = createContext(null);
+
 function App(props) {
-  return <RouterProvider router={routes} />;
+  // 로그인 정보 담긴 메소드
+  const [login, setLogin] = useState("");
+
+  useEffect(() => {
+    fetchLogin();
+  }, []);
+
+  // 로그인 성공하거나  실패 할때 사용 하는 코드
+  function fetchLogin() {
+    axios.get("/api/member/login").then((response) => setLogin(response.data));
+  }
+
+  // 로그인을 할 때 빈 스트링인지 확인 해주는 코드
+  function isAuthenticated() {
+    return login !== "";
+  }
+
+  return (
+    <LoginContext.Provider value={{ login, fetchLogin, isAuthenticated }}>
+      <RouterProvider router={routes} />;
+    </LoginContext.Provider>
+  );
 }
 
 export default App;
