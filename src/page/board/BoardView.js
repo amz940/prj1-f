@@ -81,7 +81,7 @@ export function BoardView() {
         <Input value={board.inserted} readOnly />
       </FormControl>
 
-      {hasAccess(board.writer || isAdmin()) && (
+      {(hasAccess(board.writer) || isAdmin()) && (
         <Box>
           <Button colorScheme="purple" onClick={() => navigate("/edit/" + id)}>
             수정
