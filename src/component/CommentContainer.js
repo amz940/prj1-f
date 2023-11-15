@@ -1,6 +1,6 @@
 import { Box, Button, Input, Textarea } from "@chakra-ui/react";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function CommentForm({ boardId }) {
   const [comment, setComment] = useState(null);
@@ -21,10 +21,20 @@ function CommentForm({ boardId }) {
   );
 }
 
-function CommentList() {
+function CommentList({ boardId }) {
+  const [commentList, setCommentList] = useState(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    params.set("id", boardId);
+    axios
+      .get("/api/comment/list?" + params)
+      .then((response) => setCommentList(response.data));
+  }, []);
+
   return (
     // TODO : 댓글 read 기능 추가
-    <Box></Box>
+    <Box>댓글 리스트</Box>
   );
 }
 
@@ -32,7 +42,7 @@ export function CommentContainer({ boardId }) {
   return (
     <Box>
       <CommentForm boardId={boardId} />
-      <CommentList />
+      <CommentList boardId={boardId} />
     </Box>
   );
 }
