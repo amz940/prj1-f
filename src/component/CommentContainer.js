@@ -19,9 +19,10 @@ import {
   Textarea,
   useDisclosure,
 } from "@chakra-ui/react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
 import { DeleteIcon } from "@chakra-ui/icons";
+import { LoginContext } from "./LoginProvider";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
   const [comment, setComment] = useState("");
@@ -31,7 +32,6 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   }
 
   return (
-    // 여러 줄 쓰고 싶을떈 Textarea / 한 줄은 input
     <Box>
       <Textarea value={comment} onChange={(e) => setComment(e.target.value)} />
       <Button isDisabled={isSubmitting} onClick={handleSubmit}>
@@ -42,33 +42,36 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
 }
 
 function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
+  const { hasAccess } = useContext(LoginContext);
+
   return (
     <Card>
       <CardHeader>
-        <Heading size={"md"}>댓글 리스트</Heading>
+        <Heading size="md">댓글 리스트</Heading>
       </CardHeader>
       <CardBody>
         <Stack divider={<StackDivider />} spacing="4">
-          {/*TODO : 새로운 줄 출력*/}
-          {/*TODO : 댓글 작성 후 re render*/}
           {commentList.map((comment) => (
             <Box key={comment.id}>
-              <Flex>
-                <Heading fontSize="xs">{comment.memberId}</Heading>
+              <Flex justifyContent="space-between">
+                <Heading size="xs">{comment.memberId}</Heading>
                 <Text fontSize="xs">{comment.inserted}</Text>
               </Flex>
               <Flex justifyContent="space-between" alignItems="center">
-                <Text pt="2" fontSize="xs">
+                <Text sx={{ whiteSpace: "pre-wrap" }} pt="2" fontSize="sm">
                   {comment.comment}
                 </Text>
-                <Button
-                  isDisabled={isSubmitting}
-                  size="xs"
-                  colorScheme="red"
-                  onClick={() => onDeleteModalOpen(comment.id)}
-                >
-                  <DeleteIcon />
-                </Button>
+
+                {hasAccess(comment.memberId) && (
+                  <Button
+                    isDisabled={isSubmitting}
+                    onClick={() => onDeleteModalOpen(comment.id)}
+                    size="xs"
+                    colorScheme="red"
+                  >
+                    <DeleteIcon />
+                  </Button>
+                )}
               </Flex>
             </Box>
           ))}
@@ -80,10 +83,14 @@ function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
 
 export function CommentContainer({ boardId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [id, setId] = useState(0);
+  // useRef : 컴포넌트에서 임시로 값을 저장하는 용도로 사용한다
+  const commentIdRef = useRef(0);
   const [commentList, setCommentList] = useState([]);
-  const [id, setId] = useState(0);
 
   const { isOpen, onClose, onOpen } = useDisclosure();
+
+  const { isAuthenticated } = useContext(LoginContext);
 
   useEffect(() => {
     if (!isSubmitting) {
@@ -106,37 +113,39 @@ export function CommentContainer({ boardId }) {
 
   function handleDelete() {
     // console.log(id + "번 댓글 삭제");
-    // TODO : then, catch, finally 추가
+    // TODO: 모달, then, catch, finally
 
     setIsSubmitting(true);
-
-    axios.delete("/api/comment/" + id).finally(() => {
+    axios.delete("/api/comment/" + commentIdRef.current).finally(() => {
       onClose();
       setIsSubmitting(false);
     });
   }
 
   function handleDeleteModalOpen(id) {
-    // id를 어딘가 저장
-    setId(id);
+    // id 를 어딘가 저장
+    // 렌더링을 따로 할 필요가 없어서
+    commentIdRef.current = id;
     // 모달 열기
     onOpen();
   }
-
   return (
     <Box>
-      <CommentForm
-        boardId={boardId}
-        isSubmitting={isSubmitting}
-        onSubmit={handleSubmit}
-      />
+      {isAuthenticated() && (
+        <CommentForm
+          boardId={boardId}
+          isSubmitting={isSubmitting}
+          onSubmit={handleSubmit}
+        />
+      )}
       <CommentList
         boardId={boardId}
         isSubmitting={isSubmitting}
         commentList={commentList}
         onDeleteModalOpen={handleDeleteModalOpen}
       />
-      {/* 댓글 삭제 모달 */}
+
+      {/* 삭제 모달 */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
