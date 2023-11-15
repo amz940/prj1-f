@@ -44,7 +44,7 @@ function CommentList({ commentList }) {
           {/*TODO : 새로운 줄 출력*/}
           {/*TODO : 댓글 작성 후 re render*/}
           {commentList.map((comment) => (
-            <Box>
+            <Box key={comment.id}>
               <Flex>
                 <Heading size="xs">{comment.memberId}</Heading>
                 <Text fontsize="xs">{comment.inserted}</Text>
