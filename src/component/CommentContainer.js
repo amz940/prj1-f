@@ -24,7 +24,6 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { LoginContext } from "./LoginProvider";
-import { errors } from "immer/src/utils/errors";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
   const [comment, setComment] = useState("");
