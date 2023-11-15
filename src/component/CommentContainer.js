@@ -18,11 +18,13 @@ import {
   Text,
   Textarea,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { LoginContext } from "./LoginProvider";
+import { errors } from "immer/src/utils/errors";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
   const [comment, setComment] = useState("");
@@ -90,6 +92,8 @@ export function CommentContainer({ boardId }) {
 
   const { isOpen, onClose, onOpen } = useDisclosure();
 
+  const toast = useToast();
+
   const { isAuthenticated } = useContext(LoginContext);
 
   useEffect(() => {
@@ -108,6 +112,18 @@ export function CommentContainer({ boardId }) {
 
     axios
       .post("/api/comment/add", comment)
+      .then(() =>
+        toast({
+          description: "댓글이 등록되었습니다",
+          status: "success",
+        }),
+      )
+      .catch((error) => {
+        toast({
+          description: "오류가 발생했습니다",
+          status: "error",
+        });
+      })
       .finally(() => setIsSubmitting(false));
   }
 
@@ -116,10 +132,31 @@ export function CommentContainer({ boardId }) {
     // TODO: 모달, then, catch, finally
 
     setIsSubmitting(true);
-    axios.delete("/api/comment/" + commentIdRef.current).finally(() => {
-      onClose();
-      setIsSubmitting(false);
-    });
+    axios
+      .delete("/api/comment/" + commentIdRef.current)
+      .then(() => {
+        toast({
+          description: "댓글이 삭제되었습니다",
+          status: "success",
+        });
+      })
+      .catch((error) => {
+        if (error.response.status === 401 || error.response.status === 403) {
+          toast({
+            description: "권한이 없습니다.",
+            status: "warning",
+          });
+        } else {
+          toast({
+            description: "댓글 삭제 중 문제가 발생했습니다",
+            status: "warning",
+          });
+        }
+      })
+      .finally(() => {
+        onClose();
+        setIsSubmitting(false);
+      });
   }
 
   function handleDeleteModalOpen(id) {
