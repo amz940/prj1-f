@@ -98,7 +98,7 @@ export function CommentContainer({ boardId }) {
     // console.log(id + "번 댓글 삭제");
     // TODO : then, catch, finally 추가
 
-    isSubmitting(true);
+    setIsSubmitting(true);
 
     axios.delete("/api/comment/" + id).finally(() => setIsSubmitting(false));
   }
@@ -112,7 +112,7 @@ export function CommentContainer({ boardId }) {
       />
       <CommentList
         boardId={boardId}
-        isSubmitting={{ isSubmitting }}
+        isSubmitting={isSubmitting}
         commentList={commentList}
         onDelete={handleDelete}
       />
