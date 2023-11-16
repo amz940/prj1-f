@@ -23,7 +23,7 @@ import {
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { DeleteIcon, EditIcon, NotAllowedIcon } from "@chakra-ui/icons";
-import { LoginContext } from "./LoginProvider";
+import { LoginContext } from "./LogInProvider";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
   const [comment, setComment] = useState("");
@@ -42,39 +42,46 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   );
 }
 
-function CommentItem({ comment, onDeleteModalOpen, setIsSubmitting  }) {
+function CommentItem({
+  comment,
+  onDeleteModalOpen,
+  setIsSubmitting,
+  isSubmitting,
+}) {
   const [isEditing, setIsEditing] = useState(false);
   const [commentEdited, setCommentEdited] = useState(comment.comment);
 
   const { hasAccess } = useContext(LoginContext);
+
   const toast = useToast();
 
   function handleSubmit() {
+    // TODO : 응답 코드에 따른 기능들
+
     setIsSubmitting(true);
 
     axios
       .put("/api/comment/edit", { id: comment.id, comment: commentEdited })
       .then(() => {
         toast({
-          description : "댓글이 수정 되었습니다",
-          status : "success"
-        })
+          description: "댓글이 수정되었습니다.",
+          status: "success",
+        });
       })
       .catch((error) => {
-        if (error.response.status === 401 || error.response.status === 403){
+        if (error.response.status === 401 || error.response.status === 403) {
           toast({
-            description : "권한이 없습니다",
-            status : "error"
-          })
+            description: "권한이 없습니다.",
+            status: "warning",
+          });
         }
 
-        if (error.response.status === 400){
+        if (error.response.status === 400) {
           toast({
-            description : "입력값을 확인해주세요",
-            status : "warning"
-          })
+            description: "입력값을 확인해주세요.",
+            status: "warning",
+          });
         }
-
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -99,7 +106,11 @@ function CommentItem({ comment, onDeleteModalOpen, setIsSubmitting  }) {
                 value={commentEdited}
                 onChange={(e) => setCommentEdited(e.target.value)}
               />
-              <Button colorSchme="blue" onClick={handleSubmit}>
+              <Button
+                isDisabled={isSubmitting}
+                colorScheme="blue"
+                onClick={handleSubmit}
+              >
                 저장
               </Button>
             </Box>
@@ -120,7 +131,7 @@ function CommentItem({ comment, onDeleteModalOpen, setIsSubmitting  }) {
             {isEditing && (
               <Button
                 size="xs"
-                colorSchem="blue"
+                colorScheme="gray"
                 onClick={() => setIsEditing(false)}
               >
                 <NotAllowedIcon />
@@ -158,6 +169,7 @@ function CommentList({
           {commentList.map((comment) => (
             <CommentItem
               key={comment.id}
+              isSubmitting={isSubmitting}
               setIsSubmitting={setIsSubmitting}
               comment={comment}
               onDeleteModalOpen={onDeleteModalOpen}
@@ -171,16 +183,17 @@ function CommentList({
 
 export function CommentContainer({ boardId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [id, setId] = useState(0);
-  // useRef : 컴포넌트에서 임시로 값을 저장하는 용도로 사용한다
-  const commentIdRef = useRef(0);
   const [commentList, setCommentList] = useState([]);
 
   const { isOpen, onClose, onOpen } = useDisclosure();
 
-  const toast = useToast();
+  // const [id, setId] = useState(0);
+  // useRef : 컴포넌트에서 임시로 값을 저장하는 용도로 사용
+  const commentIdRef = useRef(0);
 
   const { isAuthenticated } = useContext(LoginContext);
+
+  const toast = useToast();
 
   useEffect(() => {
     if (!isSubmitting) {
@@ -198,15 +211,15 @@ export function CommentContainer({ boardId }) {
 
     axios
       .post("/api/comment/add", comment)
-      .then(() =>
+      .then(() => {
         toast({
-          description: "댓글이 등록되었습니다",
+          description: "댓글이 등록되었습니다.",
           status: "success",
-        }),
-      )
+        });
+      })
       .catch((error) => {
         toast({
-          description: "오류가 발생했습니다",
+          description: "댓글 등록 중 문제가 발생하였습니다.",
           status: "error",
         });
       })
@@ -214,15 +227,12 @@ export function CommentContainer({ boardId }) {
   }
 
   function handleDelete() {
-    // console.log(id + "번 댓글 삭제");
-    // TODO: 모달, then, catch, finally
-
     setIsSubmitting(true);
     axios
       .delete("/api/comment/" + commentIdRef.current)
       .then(() => {
         toast({
-          description: "댓글이 삭제되었습니다",
+          description: "댓글이 삭제되었습니다.",
           status: "success",
         });
       })
@@ -234,8 +244,8 @@ export function CommentContainer({ boardId }) {
           });
         } else {
           toast({
-            description: "댓글 삭제 중 문제가 발생했습니다",
-            status: "warning",
+            description: "댓글 삭제 중 문제가 발생했습니다.",
+            status: "error",
           });
         }
       })
@@ -247,7 +257,7 @@ export function CommentContainer({ boardId }) {
 
   function handleDeleteModalOpen(id) {
     // id 를 어딘가 저장
-    // 렌더링을 따로 할 필요가 없어서
+    // setId(id);
     commentIdRef.current = id;
     // 모달 열기
     onOpen();
@@ -263,8 +273,7 @@ export function CommentContainer({ boardId }) {
       )}
       <CommentList
         boardId={boardId}
-        key = {}
-        isSubmitting={isSubmitting}q
+        isSubmitting={isSubmitting}
         setIsSubmitting={setIsSubmitting}
         commentList={commentList}
         onDeleteModalOpen={handleDeleteModalOpen}
