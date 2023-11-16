@@ -42,18 +42,44 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   );
 }
 
-function CommentItem({ comment, onDeleteModalOpen }) {
+function CommentItem({ comment, onDeleteModalOpen, setIsSubmitting  }) {
   const [isEditing, setIsEditing] = useState(false);
   const [commentEdited, setCommentEdited] = useState(comment.comment);
 
   const { hasAccess } = useContext(LoginContext);
+  const toast = useToast();
 
   function handleSubmit() {
+    setIsSubmitting(true);
+
     axios
       .put("/api/comment/edit", { id: comment.id, comment: commentEdited })
-      .then(() => console.log("ee"))
-      .catch(() => console.log("bad"))
-      .finally(() => console.log("end"));
+      .then(() => {
+        toast({
+          description : "댓글이 수정 되었습니다",
+          status : "success"
+        })
+      })
+      .catch((error) => {
+        if (error.response.status === 401 || error.response.status === 403){
+          toast({
+            description : "권한이 없습니다",
+            status : "error"
+          })
+        }
+
+        if (error.response.status === 400){
+          toast({
+            description : "입력값을 확인해주세요",
+            status : "warning"
+          })
+        }
+
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        setIsEditing(false);
+      });
   }
 
   return (
@@ -114,7 +140,12 @@ function CommentItem({ comment, onDeleteModalOpen }) {
   );
 }
 
-function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
+function CommentList({
+  commentList,
+  onDeleteModalOpen,
+  isSubmitting,
+  setIsSubmitting,
+}) {
   const { hasAccess } = useContext(LoginContext);
 
   return (
@@ -127,6 +158,7 @@ function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
           {commentList.map((comment) => (
             <CommentItem
               key={comment.id}
+              setIsSubmitting={setIsSubmitting}
               comment={comment}
               onDeleteModalOpen={onDeleteModalOpen}
             />
@@ -231,7 +263,9 @@ export function CommentContainer({ boardId }) {
       )}
       <CommentList
         boardId={boardId}
-        isSubmitting={isSubmitting}
+        key = {}
+        isSubmitting={isSubmitting}q
+        setIsSubmitting={setIsSubmitting}
         commentList={commentList}
         onDeleteModalOpen={handleDeleteModalOpen}
       />
