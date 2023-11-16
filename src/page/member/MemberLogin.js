@@ -35,9 +35,6 @@ export function MemberLogin() {
           description: "로그인 실패하였습니다",
           status: "error",
         });
-      })
-      .finally(() => {
-        fetchLogin();
       });
   }
 

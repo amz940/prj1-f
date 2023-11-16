@@ -61,8 +61,6 @@ export function MemberView() {
           status: "success",
         });
         navigate("/");
-
-        // TODO : 로그아웃 기능 추가하기
       })
       .catch((error) => {
         if (error.response.status === 401 || error.response.status === 403) {
