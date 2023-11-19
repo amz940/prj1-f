@@ -39,8 +39,12 @@ function LikeContainer({ like, onClick }) {
     <Flex gap={2}>
       <Tooltip isDisabled={isAuthenticated()} hasArrow label={"로그인 하세요"}>
         <Button variant="ghost" size="xl" onClick={onClick}>
-          {like.like && <FontAwesomeIcon icon={fullHeart} size="xl" />}
-          {like.like || <FontAwesomeIcon icon={emptyHeart} size="xl" />}
+          {like.like && (
+            <FontAwesomeIcon icon={emptyHeart} size="xl" color="red" />
+          )}
+          {like.like || (
+            <FontAwesomeIcon icon={fullHeart} size="xl" color="red" />
+          )}
           <Text>{like.countLike}</Text>
         </Button>
       </Tooltip>
