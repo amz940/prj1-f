@@ -40,20 +40,32 @@ function Pagination({ pageInfo }) {
     <Box>
       {/* 뒤로가기*/}
       {pageInfo.prevPageNumber && (
-        <Button onClick={() => navigate("/?p=" + pageInfo.prevPageNumber)}>
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/?p=" + pageInfo.prevPageNumber)}
+        >
           <FontAwesomeIcon icon={faAngleLeft} />
         </Button>
       )}
 
       {pageNumbers.map((pageNumber) => (
-        <Button key={pageNumber} onClick={() => navigate("/?p=" + pageNumber)}>
+        <Button
+          key={pageNumber}
+          variant={
+            pageNumber === pageInfo.currentPageNumber ? "solid" : "ghost"
+          }
+          onClick={() => navigate("/?p=" + pageNumber)}
+        >
           {pageNumber}
         </Button>
       ))}
 
       {/*앞으로 가기*/}
       {pageInfo.nextPageNumber && (
-        <Button onClick={() => navigate("/?p=" + pageInfo.nextPageNumber)}>
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/?p=" + pageInfo.nextPageNumber)}
+        >
           <FontAwesomeIcon icon={faAngleRight} />
         </Button>
       )}
