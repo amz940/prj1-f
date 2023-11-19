@@ -20,7 +20,11 @@ import {
 } from "react-router-dom";
 import { ChatIcon } from "@chakra-ui/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleLeft,
+  faAngleRight,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
 import * as PropTypes from "prop-types";
 
 function Pagination({ pageInfo }) {
@@ -32,16 +36,27 @@ function Pagination({ pageInfo }) {
     pageNumbers.push(i);
   }
 
-  console.log(pageNumbers);
-  console.log(pageInfo);
-
   return (
     <Box>
+      {/* 뒤로가기*/}
+      {pageInfo.prevPageNumber && (
+        <Button onClick={() => navigate("/?p=" + pageInfo.prevPageNumber)}>
+          <FontAwesomeIcon icon={faAngleLeft} />
+        </Button>
+      )}
+
       {pageNumbers.map((pageNumber) => (
         <Button key={pageNumber} onClick={() => navigate("/?p=" + pageNumber)}>
           {pageNumber}
         </Button>
       ))}
+
+      {/*앞으로 가기*/}
+      {pageInfo.nextPageNumber && (
+        <Button onClick={() => navigate("/?p=" + pageInfo.nextPageNumber)}>
+          <FontAwesomeIcon icon={faAngleRight} />
+        </Button>
+      )}
     </Box>
   );
 }
