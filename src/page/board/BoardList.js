@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Badge,
   Box,
+  Button,
   Spinner,
   Table,
   Tbody,
@@ -18,15 +19,17 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 export function BoardList() {
   const [boardList, setBoardList] = useState(null);
+  const [pageInfo, setPageInfo] = useState(null);
 
   const [params] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get("/api/board/list?" + params)
-      .then((response) => setBoardList(response.data));
-  }, []);
+    axios.get("/api/board/list?" + params).then((response) => {
+      setBoardList(response.data.boardList);
+      setPageInfo(response.data.pageInfo);
+    });
+  }, [params]);
 
   if (boardList === null) {
     return <Spinner />;
@@ -74,6 +77,19 @@ export function BoardList() {
             ))}
           </Tbody>
         </Table>
+      </Box>
+
+      <Box>
+        <Button onClick={() => navigate("/?p=1")}>1</Button>
+        <Button onClick={() => navigate("/?p=2")}>2</Button>
+        <Button onClick={() => navigate("/?p=3")}>3</Button>
+        <Button onClick={() => navigate("/?p=4")}>4</Button>
+        <Button onClick={() => navigate("/?p=5")}>5</Button>
+        <Button onClick={() => navigate("/?p=6")}>6</Button>
+        <Button onClick={() => navigate("/?p=7")}>7</Button>
+        <Button onClick={() => navigate("/?p=8")}>8</Button>
+        <Button onClick={() => navigate("/?p=9")}>9</Button>
+        <Button onClick={() => navigate("/?p=10")}>10</Button>
       </Box>
     </Box>
   );
