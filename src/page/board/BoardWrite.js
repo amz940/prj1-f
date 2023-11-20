@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   FormControl,
+  FormHelperText,
   FormLabel,
   Input,
   Textarea,
@@ -77,6 +78,9 @@ export function BoardWrite() {
             multiple
             onChange={(e) => setFiles(e.target.files)}
           />
+          <FormHelperText>
+            한개 파일은 1MB 이내, 총 파일은 10MB 이내로 첨부하시오.
+          </FormHelperText>
         </FormControl>
 
         <Button
