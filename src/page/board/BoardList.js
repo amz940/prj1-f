@@ -112,6 +112,7 @@ function SearchComponent() {
         </option>
         <option value="title">제목</option>
         <option value="content">본문</option>
+        <option value="nickName">닉네임</option>
       </Select>
       <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} />
       <Button onClick={handleSearch}>검색</Button>
